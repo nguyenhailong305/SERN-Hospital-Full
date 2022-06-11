@@ -28,5 +28,13 @@ const getAllCodeService = (inputType) => {
      return axios.get(`/api/allcode?type=${inputType}`) ;
 
 }
-export {handleLoginApi , getAllUsers , createNewUserService , deleteUserService , editUserService , getAllCodeService ,}
+const getTopDoctorHomeService = (limit) => {
+     return axios.get(`/api/top-doctor-home?limit=${limit}`) ;
+
+}
+const getDetailInforDoctor = (inputId) => {
+     return axios.get(`/api/get-detail-doctor-by-id?id=${inputId}`) ;
+
+}
+export {handleLoginApi , getAllUsers , createNewUserService , deleteUserService , editUserService , getAllCodeService , getTopDoctorHomeService , getDetailInforDoctor}
 

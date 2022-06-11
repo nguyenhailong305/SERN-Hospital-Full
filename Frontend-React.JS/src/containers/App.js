@@ -5,7 +5,6 @@ import { ConnectedRouter as Router } from "connected-react-router";
 import { history } from "../redux";
 import { ToastContainer } from "react-toastify";
 
-
 import {
   userIsAuthenticated,
   userIsNotAuthenticated,
@@ -19,8 +18,9 @@ import System from "../routes/System";
 
 import { CustomToastCloseButton } from "../components/CustomToast";
 import ConfirmModal from "../components/ConfirmModal";
-import HomePage from './Homepage/HomePage'
+import HomePage from "./Homepage/HomePage";
 import CustomScrollbars from "../components/CustomScrollbars";
+import DetailDoctor from "./Patient/Doctor/DetailDoctor";
 
 class App extends Component {
   handlePersistorState = () => {
@@ -47,26 +47,26 @@ class App extends Component {
         <Router history={history}>
           <div className="main-container">
             <ConfirmModal />
-         
 
             <div className="content-container">
-              <CustomScrollbars style= {{height : '100vh' ,width : '100%'}} >
-              <Switch>
-                <Route path={path.HOME} exact component={Home} />
-                <Route
-                  path={path.LOGIN}
-                  component={userIsNotAuthenticated(Login)}
-                />
-                <Route
-                  path={path.SYSTEM}
-                  component={userIsAuthenticated(System)}
-                />
+              <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
+                <Switch>
+                  <Route path={path.HOME} exact component={Home} />
+                  <Route
+                    path={path.LOGIN}
+                    component={userIsNotAuthenticated(Login)}
+                  />
+                  <Route
+                    path={path.SYSTEM}
+                    component={userIsAuthenticated(System)}
+                  />
                   <Route path={path.HOMEPAGE} component={HomePage} />
-              </Switch>
+                  <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
+                </Switch>
               </CustomScrollbars>
             </div>
 
-            <ToastContainer
+            {/* <ToastContainer
               className="toast-container"
               toastClassName="toast-item"
               bodyClassName="toast-item-body"
@@ -77,7 +77,24 @@ class App extends Component {
               closeOnClick={false}
               draggable={false}
               closeButton={<CustomToastCloseButton />}
+            /> */}
+
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable={true}
+              pauseOnHover={true}
+              process={undefined}
             />
+          
+            <ToastContainer />
+
+            
           </div>
         </Router>
       </Fragment>

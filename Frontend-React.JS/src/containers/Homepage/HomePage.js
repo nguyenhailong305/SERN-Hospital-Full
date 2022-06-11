@@ -20,16 +20,17 @@ class HomePage extends Component {
     render() {
         let settings = {
             dots: false,
-            infinite: true,
+            infinite: false,
             speed: 500,
             slidesToShow: 4,
             slidesToScroll: 1,
+        
             // nextArrow: <SampleNextArrow/>,
             // prevArrow: <SamplePrevArrow/>
           };
         return ( 
         <div>
-            <HomeHeader/>
+            <HomeHeader isShowBanner={true}/>
             <Speciality settings ={settings} />   
             <MedicalFacility  settings ={settings} />
             <OutStandingDoctor settings ={settings} />
