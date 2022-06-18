@@ -36,5 +36,10 @@ const getDetailInforDoctor = (inputId) => {
      return axios.get(`/api/get-detail-doctor-by-id?id=${inputId}`) ;
 
 }
-export {handleLoginApi , getAllUsers , createNewUserService , deleteUserService , editUserService , getAllCodeService , getTopDoctorHomeService , getDetailInforDoctor}
+
+const getAllDoctors = () => {
+     return axios.get(`/api/get-all-doctors`) ;
+
+}
+export {handleLoginApi , getAllUsers , createNewUserService , deleteUserService , editUserService , getAllCodeService , getTopDoctorHomeService , getDetailInforDoctor , getAllDoctors}
 

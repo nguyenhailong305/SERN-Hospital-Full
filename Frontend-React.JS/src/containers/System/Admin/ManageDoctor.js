@@ -1,98 +1,122 @@
 import React, { Component } from "react";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
-import "./TableManageUser.scss";
+import "./ManageDoctor.scss";
 import * as actions from "../../../store/actions";
-import MarkdownIt from 'markdown-it'; 
-import MdEditor from 'react-markdown-editor-lite';
+import MarkdownIt from "markdown-it";
+import MdEditor from "react-markdown-editor-lite";
 // import style manually
-import 'react-markdown-editor-lite/lib/index.css';
+import "react-markdown-editor-lite/lib/index.css";
+import Select from 'react-select';
+import { LANGUAGES } from "../../../utils";
 
-// Register plugins if required
-// MdEditor.use(YOUR_PLUGINS_HERE);
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
+];
 
-// Initialize a markdown parser
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-// Finish!
-function handleEditorChange({ html, text }) {
-  console.log('handleEditorChange', html, text);    
-}
-
-class TableManageUser extends Component {
+class ManageDoctor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      usersRedux: [],
+      contentMarkdown: "",
+      contentHTML: "",
+      selectedDoctor: '',
+      description : '',
+      listDoctors : [],
     };
   }
 
   componentDidMount() {
-    this.props.fetchUserRedux();
+    this.props.fetchAllDoctorRedux();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.listUsers !== this.props.listUsers) {
+    if(prevProps.allDoctors !== this.props.allDoctors){
       this.setState({
-        usersRedux: this.props.listUsers,
-      });
+        listDoctors : this.props.allDoctors,
+      })
     }
   }
 
-  handleDeleteUsers = (user) => {
-    this.props.deleteUserRedux(user.id);
+  buildDataInputSelect = (inputData) => {
+    let result = []; 
+    let { language } = this.props ;
+    if(inputData && inputData.length > 0){
+      inputData.map((item ,index) => {
+        let object = {} ;
+        let labelVi = `${item.lastName} ${item.firstName}`;
+        let labelEn = `${item.firstName} ${item.lastName}`
+        object.label = language === LANGUAGES.VI ?  labelVi : labelEn ;
+        object.value = item.id;
+        result.push(object);
+
+       
+      })
+     
+    }
+    return result;
+  }
+  // Finish!
+  handleEditorChange = ({ html, text }) => {
+    this.setState({ 
+      contentMarkdown: text ,
+      contentHTML: html
+    })
   }
 
-  handleEditUsers = (user) => {
-    this.props.handleEditUserFromParentKey(user);
+  handleSaveContentMarkdown = () => {
+     console.log('Check State' , this.state);
+  };
+
+  handleChange = (selectedOption) => {
+    this.setState({ selectedOption}
+    );
+  };
+  handleOnChangeDesc = (event) => {
+    this.setState({
+      description : event.target.value   
+    })
   }
+
+
   render() {
-    console.log("hoidanit check all users", this.props.listUsers);
-    console.log("hoidanit check state", this.state.usersRedux);
-    let arrUser = this.state.usersRedux;
     return (
-      <React.Fragment>
-      <table className="table mt-3 table-striped   " id="TableManageUser">
-        <thead>
-          <tr className="bg-success text-white">
-            <th scope="col">Email</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Address</th>
-            <th scope="col">Phone Number</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {arrUser &&
-            arrUser.length > 0 &&
-            arrUser.map((item, index) => {
-              return (
-                <tr key={index}>
-                  <td>{item.email}</td>
-                  <td>{item.firstName}</td>
-                  <td>{item.lastName}</td>
-                  <td>{item.address}</td>
-                  <td>{item.phoneNumber}</td>
-
-                  <td>
-                    <button type="button" className="btn-edit"
-                    onClick={() => this.handleEditUsers(item)}>
+      <div className="manage-doctor-container">
+        <div className="manage-doctor-title">Tạo thêm thông tin Bác sĩ</div>
+        <div className="more-infor">
+         
+          <div className="content-right">
+            <label>Chọn Bác sĩ</label>
+            <Select
+        Value={this.state.selectedOption}
+        onChange={this.handleChange}
+        options={options}
+      />
            
-                      <i className="fas fa-pencil-alt"> </i>
-                    </button>
-                    <button type="button" className="btn-delete" onClick={() => this.handleDeleteUsers(item)}>
-    
-                      <i className="fas fa-trash"> </i>
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
-          <MdEditor style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
-          </React.Fragment>
+          </div>
+          <div className="content-left">
+            <label >Thông tin giới thiệu : </label>
+            <textarea onChange={(event) => this.handleOnChangeDesc(event)} value={this.state.description} className = "form-control" rows="4"></textarea>
+          </div>
+        </div>
+        <div className="manage-doctor-editor">
+          <MdEditor
+            style={{ height: "500px" }}
+            renderHTML={(text) => mdParser.render(text)}
+            onChange={this.handleEditorChange}
+          />
+        </div>
+        <button
+          onClick={() => this.handleSaveContentMarkdown()}
+          className="save-content-doctor"
+        >
+          Lưu thông tin
+        </button>
+      </div>
     );
   }
 }
@@ -100,14 +124,17 @@ class TableManageUser extends Component {
 const mapStateToProps = (state) => {
   return {
     listUsers: state.admin.users,
+    allDoctors : state.admin.allDoctors,
+    language : state.app.language
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchUserRedux: () => dispatch(actions.fetchAllUserStart()),
-    deleteUserRedux : (id) => dispatch(actions.deleteUser(id))
+    deleteUserRedux: (id) => dispatch(actions.deleteUser(id)),
+    fetchAllDoctorRedux : () => dispatch(actions.fetchAllDoctor()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TableManageUser);
+export default connect(mapStateToProps, mapDispatchToProps)(ManageDoctor);
