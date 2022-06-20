@@ -10,11 +10,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import Select from 'react-select';
 import { LANGUAGES } from "../../../utils";
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
+
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -34,14 +30,6 @@ class ManageDoctor extends Component {
     this.props.fetchAllDoctorRedux();
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if(prevProps.allDoctors !== this.props.allDoctors){
-      this.setState({
-        listDoctors : this.props.allDoctors,
-      })
-    }
-  }
-
   buildDataInputSelect = (inputData) => {
     let result = []; 
     let { language } = this.props ;
@@ -54,12 +42,28 @@ class ManageDoctor extends Component {
         object.value = item.id;
         result.push(object);
 
-       
       })
      
     }
     return result;
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if(prevProps.allDoctors !== this.props.allDoctors){
+      let dataSelect = this.buildDataInputSelect(this.props.allDoctors)
+      this.setState({
+        listDoctors : dataSelect
+      })
+    }
+    if(prevProps.language !== this.props.language){
+      let dataSelect = this.buildDataInputSelect(this.props.allDoctors)
+      this.setState({
+        listDoctors : dataSelect
+      })
+    }
+  }
+
+  
   // Finish!
   handleEditorChange = ({ html, text }) => {
     this.setState({ 
@@ -69,6 +73,12 @@ class ManageDoctor extends Component {
   }
 
   handleSaveContentMarkdown = () => {
+    this.props.saveDetailDoctor({
+      contentHTML : this.state.contentHTML,
+      contentMarkdown : this.state.contentMarkdown,
+      description : this.state.description,
+      doctorId : this.state.selectedOption.value
+    });
      console.log('Check State' , this.state);
   };
 
@@ -94,7 +104,7 @@ class ManageDoctor extends Component {
             <Select
         Value={this.state.selectedOption}
         onChange={this.handleChange}
-        options={options}
+        options={this.state.listDoctors}
       />
            
           </div>
@@ -133,7 +143,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchUserRedux: () => dispatch(actions.fetchAllUserStart()),
     deleteUserRedux: (id) => dispatch(actions.deleteUser(id)),
-    fetchAllDoctorRedux : () => dispatch(actions.fetchAllDoctor()),
+    fetchAllDoctorRedux : (id) => dispatch(actions.fetchAllDoctor()),
+    saveDetailDoctor : (data) => dispatch(actions.saveDetailDoctor(data))
   };
 };
 

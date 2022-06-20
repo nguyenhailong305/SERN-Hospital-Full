@@ -91,7 +91,7 @@ const adminReducer = (state = initialState, action) => {
           ...state,
         };
       case actionTypes.FETCH_ALL_DOCTORS_FAILED:
-        state.topDoctors = [];
+        state.allDoctors = [];
         return {
           ...state,
         };
